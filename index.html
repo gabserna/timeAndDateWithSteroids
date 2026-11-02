@@ -82,7 +82,7 @@
         max-width: 90%;
         font-size: 1rem;
         cursor: text;
-        border: 1px solid #0A0A0A;
+        border: 1px solid #0a0a0a;
         border-radius: 8px;
         padding: 0 0.5rem;
       }
@@ -155,12 +155,12 @@
 
   <body>
     <!-- clock, date, weather, quote -->
-   <div id="wrapper">
-    <div id="time"></div>
-    <div id="date"></div>
-    <div id="weather">Loading weather...</div>
-    <div id="quote"></div>
-  </div>
+    <div id="wrapper">
+      <div id="time"></div>
+      <div id="date"></div>
+      <div id="weather">Loading weather...</div>
+      <div id="quote"></div>
+    </div>
     <!-- terminal interface -->
     <div class="terminal">
       <div id="terminal-output"></div>
@@ -170,7 +170,9 @@
         <span class="cursor"></span>
         <input id="terminal-input" autofocus />
       </div>
-      <p id="try">type 'help' for commands or 'matrix' for animation / 'stop' to quit</p>
+      <p id="try">
+        type 'help' for commands or 'matrix' for animation / 'stop' to quit
+      </p>
     </div>
 
     <!-- matrix background which I really love and wanted to implement for a long time -->
@@ -187,7 +189,20 @@
     <script>
       // clock system with formatted time and date
       const WEEK = ["SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT"];
-      const MONTHS = ["JAN","FEB","MAR","APR","MAY","JUN","JUL","AUG","SEP","OCT","NOV","DEC",];
+      const MONTHS = [
+        "JAN",
+        "FEB",
+        "MAR",
+        "APR",
+        "MAY",
+        "JUN",
+        "JUL",
+        "AUG",
+        "SEP",
+        "OCT",
+        "NOV",
+        "DEC",
+      ];
 
       function pad(n) {
         return String(n).padStart(2, "0");
@@ -563,28 +578,45 @@
 
       canvas.width = window.innerWidth;
       canvas.height = window.innerHeight;
-
       const chars =
+        // Números
         "0123456789" +
+        // ASCII
         "ABCDEFGHIJKLMNOPQRSTUVWXYZ" +
         "abcdefghijklmnopqrstuvwxyz" +
-        "!@#$%^&*()_+-=[]{}<>?/|" +
-        "░▒▓█▄▀■□◆◇○●◢◣◤◥" +
-        "⟟⟒⟟⟟⟒⟟⟟⟒" +
-        "诶比西迪伊吉艾杰开哦屁提维维克斯吾艾尔艾娜欧米伽" +
-        "ｱｲｳｴｵｶｷｸｹｺｻｼｽｾｿﾀﾁﾂﾃﾄﾅﾆﾇﾈﾉﾊﾋﾌﾍﾎﾏﾐﾑﾒﾓﾔﾕﾖﾗﾘﾙﾚﾛﾜ" +
-        "アイウエオカキクケコサシスセソタチツテト" +
+        // Símbolos
+        "!@#$%^&*()_+-=[]{}<>?/\\|" +
+        // Katakana
+        "アイウエオカキクケコサシスセソ" +
+        "タチツテトナニヌネノハヒフヘホ" +
+        "マミムメモヤユヨラリルレロワヲン" +
+        // Katakana pequeños
+        "ァィゥェォャュョッ" +
+        // Hiragana
+        "あいうえおかきくけこさしすせそ" +
+        "たちつてとなにぬねのはひふへほ" +
+        "まみむめもやゆよらりるれろわをん" +
+        // Griego
         "αβγδεζηθικλμνξοπρστυφχψω" +
         "ΑΒΓΔΕΖΗΘΙΚΛΜΝΞΟΠΡΣΤΥΦΧΨΩ" +
+        // Cirílico
         "АБВГДЕЖЗИЙКЛМНОПРСТУФХЦЧШЩЪЫЬЭЮЯ" +
         "абвгдежзийклмнопрстуфхцчшщъыьэюя" +
+        // Árabe
         "ابتثجحخدذرزسشصضطظعغفقكلمنهوي" +
-        "アイウエオカキクケコサシスセソタチツテトナニヌネノ" +
-        "ハヒフヘホマミムメモヤユヨラリルレロワヲン" +
-        "あいうえおかきくけこさしすせそたちつてとなにぬねの" +
+        // Coreano
         "가나다라마바사아자차카타파하" +
+        // Matemáticas
         "∑∏√∞≈≠≤≥∫∆∇∂µπΩ" +
+        "±∓×÷∝∀∃∈∉⊂⊃⊆⊇" +
+        // Símbolos técnicos
+        "※〒〆〇○●◎◇◆□■△▲▽▼☆★" +
+        // Terminal / ASCII art
+        "░▒▓█▀▄▌▐" +
+        "┌┐└┘├┤┬┴┼─│" +
+        // Runas
         "ᚠᚢᚦᚨᚱᚲᚷᚹᚺᚾᛁᛃᛇᛈᛉᛋᛏ" +
+        // Braille
         "⠁⠃⠇⠉⠙⠑⠓⠕⠗⠞⠺⠵";
 
       const fontSize = 16;
