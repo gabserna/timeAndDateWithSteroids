@@ -1,0 +1,252 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0"
+    />
+
+    <title>Matrix Rain</title>
+
+    <style>
+      :root {
+        --matrix-green: #28ff00;
+        --background: #000;
+      }
+
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+
+      html,
+      body {
+        width: 100%;
+        height: 100%;
+        overflow: hidden;
+        background: var(--background);
+      }
+
+      body {
+        position: relative;
+        font-family: monospace;
+      }
+
+      canvas {
+        position: fixed;
+        inset: 0;
+
+        width: 100%;
+        height: 100%;
+
+        display: block;
+      }
+
+      #startButton {
+        position: fixed;
+        top: 50%;
+        left: 50%;
+
+        transform: translate(-50%, -50%);
+
+        padding: 1rem 2rem;
+
+        border: 1px solid var(--matrix-green);
+        border-radius: 4px;
+
+        background: #000;
+        color: var(--matrix-green);
+
+        font: inherit;
+        font-size: 1.25rem;
+        letter-spacing: 0.15em;
+
+        cursor: pointer;
+
+        z-index: 10;
+
+        transition:
+          background-color 150ms ease,
+          color 150ms ease,
+          box-shadow 150ms ease;
+      }
+
+      #startButton:hover {
+        background: var(--matrix-green);
+        color: #000;
+
+        box-shadow:
+          0 0 10px var(--matrix-green),
+          0 0 30px var(--matrix-green);
+      }
+
+      #startButton:focus-visible {
+        outline: 2px solid var(--matrix-green);
+        outline-offset: 4px;
+      }
+
+      #startButton.hidden {
+        opacity: 0;
+        pointer-events: none;
+      }
+
+      @media (max-width: 480px) {
+        #startButton {
+          padding: 0.85rem 1.5rem;
+          font-size: 1rem;
+        }
+      }
+
+      @media (prefers-reduced-motion: reduce) {
+        #startButton {
+          transition: none;
+        }
+      }
+    </style>
+  </head>
+
+  <body>
+    <canvas id="matrix"></canvas>
+
+    <button
+      id="startButton"
+      type="button"
+      aria-label="Start Matrix Rain"
+    >
+      START
+    </button>
+
+    <script>
+      "use strict";
+      const canvas = document.getElementById("matrix");
+      const context = canvas.getContext("2d");
+      const startButton = document.getElementById("startButton");
+
+      // Matrix characters
+      const chars =
+        "0123456789" +
+        "ABCDEFGHIJKLMNOPQRSTUVWXYZ" +
+        "abcdefghijklmnopqrstuvwxyz" +
+        "!@#$%^&*()_+-=[]{}<>?/\\|" +
+        "アイウエオカキクケコサシスセソ" +
+        "タチツテトナニヌネノハヒフヘホ" +
+        "マミムメモヤユヨラリルレロワヲン" +
+        "ァィゥェォャュョッ" +
+        "あいうえおかきくけこさしすせそ" +
+        "たちつてとなにぬねのはひふへほ" +
+        "まみむめもやゆよらりるれろわをん" +
+        "αβγδεζηθικλμνξοπρστυφχψω" +
+        "ΑΒΓΔΕΖΗΘΙΚΛΜΝΞΟΠΡΣΤΥΦΧΨΩ" +
+        "АБВГДЕЖЗИЙКЛМНОПРСТУФХЦЧШЩЪЫЬЭЮЯ" +
+        "абвгдежзийклмнопрстуфхцчшщъыьэюя" +
+        "ابتثجحخدذرزسشصضطظعغفقكلمنهوي" +
+        "가나다라마바사아자차카타파하" +
+        "∑∏√∞≈≠≤≥∫∆∇∂µπΩ" +
+        "±∓×÷∝∀∃∈∉⊂⊃⊆⊇" +
+        "※〒〆〇○●◎◇◆□■△▲▽▼☆★" +
+        "░▒▓█▀▄▌▐" +
+        "┌┐└┘├┤┬┴┼─│" +
+        "ᚠᚢᚦᚨᚱᚲᚷᚹᚺᚾᛁᛃᛇᛈᛉᛋᛏ" +
+        "⠁⠃⠇⠉⠙⠑⠓⠕⠗⠞⠺⠵";
+
+      // Configuration
+      const fontSize = 16;
+      let columns;
+      let drops;
+      let animationId;
+      let running = false;
+
+      // Canvas
+      function resizeCanvas() {
+        const devicePixelRatio = Math.min(
+          window.devicePixelRatio || 1,
+          2,
+        );
+
+        canvas.width = window.innerWidth * devicePixelRatio;
+        canvas.height = window.innerHeight * devicePixelRatio;
+
+        canvas.style.width = `${window.innerWidth}px`;
+        canvas.style.height = `${window.innerHeight}px`;
+
+        context.setTransform(
+          devicePixelRatio,
+          0,
+          0,
+          devicePixelRatio,
+          0,
+          0,
+        );
+
+        columns = Math.ceil(window.innerWidth / fontSize);
+
+        drops = Array.from(
+          { length: columns },
+          () => Math.random() * -100,
+        );
+      }
+
+      // Matrix Rain
+      function draw() {
+        const width = window.innerWidth;
+        const height = window.innerHeight;
+
+        // Transparent black creates the fading trail effect.
+        context.fillStyle = "rgba(0, 0, 0, 0.05)";
+        context.fillRect(0, 0, width, height);
+
+        context.font = `${fontSize}px monospace`;
+        context.textBaseline = "top";
+
+        for (let i = 0; i < drops.length; i++) {
+          const char =
+            chars[Math.floor(Math.random() * chars.length)];
+
+          const x = i * fontSize;
+          const y = drops[i] * fontSize;
+
+          // Main character
+          context.fillStyle = "#28ff00";
+          context.fillText(char, x, y);
+
+          // Move the drop down.
+          drops[i]++;
+
+          // Randomly restart columns after reaching the bottom.
+          if (
+            y > height &&
+            Math.random() > 0.975
+          ) {
+            drops[i] = Math.random() * -20;
+          }
+        }
+        animationId = requestAnimationFrame(draw);
+      }
+
+      // Start
+      function start() {
+        if (running) {
+          return;
+        }
+        running = true;
+        startButton.classList.add("hidden");
+        resizeCanvas();
+        animationId = requestAnimationFrame(draw);
+      }
+
+      // Events
+      startButton.addEventListener("click", start);
+      window.addEventListener("resize", () => {
+        if (!running) {
+          resizeCanvas();
+          return;
+        }
+        cancelAnimationFrame(animationId);
+        resizeCanvas();
+        animationId = requestAnimationFrame(draw);
+      });
+    </script>
+  </body>
+</html>
