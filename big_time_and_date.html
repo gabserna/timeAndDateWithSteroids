@@ -18,362 +18,693 @@
     />
     <title>Time & Date</title>
     <style>
-      * {
+      :root {
+        --color-primary: #28ff00;
+        --color-danger: red;
+        --color-background: #000;
+        --color-surface: #222;
+        --color-surface-hover: #444;
+        --color-text: #fff;
+
+        --border-radius: 20px;
+        --button-radius: 8px;
+      }
+      *,
+      *::before,
+      *::after {
+        box-sizing: border-box;
         margin: 0;
         padding: 0;
-        box-sizing: border-box;
       }
+
+      html {
+        color-scheme: dark;
+      }
+
       body {
-        height: 100vh;
-        background: #000;
-        color: #28ff00;
+        min-height: 100dvh;
+        padding: 1rem;
+        background: var(--color-background);
+        color: var(--color-primary);
         font-family: "Share Tech Mono", monospace;
+        letter-spacing: 0.05em;
+        text-align: center;
+
         display: flex;
         flex-direction: column;
         justify-content: center;
         align-items: center;
-        text-align: center;
-        letter-spacing: 0.05em;
+
+        overflow-x: hidden;
       }
+
+      /* Clock */
+      .clock {
+        width: 100%;
+      }
+
       #time {
-        font-size: clamp(3rem, 8vw, 7rem);
+        font-size: clamp(3.5rem, 15vw, 10rem);
+        line-height: 1;
+        white-space: nowrap;
       }
 
       #date {
-        font-size: clamp(1.2rem, 3vw, 2rem);
-        opacity: 0.7;
+        margin-top: 0.75rem;
+
+        font-size: clamp(1.25rem, 4vw, 3rem);
+        line-height: 1.2;
+
+        opacity: 0.5;
       }
 
+      #saltLakeLabel {
+        /* margin-top: 1.5rem; */
+        font-size: 0.85rem;
+        opacity: 0.5;
+      }
+
+      #saltLakeTime {
+        margin-top: 0.25rem;
+        font-size: clamp(1.5rem, 5vw, 3rem);
+        line-height: 1;
+        opacity: 0.75;
+      }
+
+      /* Tools */
       .tools {
         display: flex;
-        gap: 50px;
-        margin-top: 50px;
+        width: min(100%, 64rem);
+
+        gap: 2rem;
+        margin-top: 5rem;
+        padding: 0 1rem;
       }
-      #cronometro,
-      #timer {
+
+      .tool {
+        flex: 1;
+        min-width: 0;
+
         display: flex;
         flex-direction: column;
-        gap: 20px;
         align-items: center;
-        border: 2px solid #28ff00;
-        border-radius: 20px;
+
+        gap: 1.25rem;
+
         padding: 2rem;
-        width: 30rem;
+
+        border: 1px solid var(--color-primary);
+        border-radius: var(--border-radius);
       }
-      #display,
-      #timerDisplay {
+
+      .tool-title {
+        font-size: 1.25rem;
+      }
+
+      .display {
         font-size: clamp(1.5rem, 4vw, 3rem);
+        line-height: 1;
+        white-space: nowrap;
       }
-      #buttonsBar {
+
+      /* Buttons */
+      .buttons-bar {
         display: flex;
-        gap: 10px;
+        justify-content: center;
+        gap: 0.5rem;
       }
+
       button {
-        border: none;
-        background: #222;
-        color: white;
-        padding: 12px;
-        margin: 5px;
-        border-radius: 8px;
+        min-width: 48px;
+        min-height: 48px;
+
+        padding: 0.75rem 1rem;
+
+        border: 1px solid transparent;
+        border-radius: var(--button-radius);
+
+        background: var(--color-surface);
+        color: var(--color-text);
+
+        font: inherit;
+
         cursor: pointer;
+
+        transition:
+          background-color 150ms ease,
+          transform 100ms ease;
       }
+
+      button:hover {
+        background: var(--color-surface-hover);
+      }
+
+      button:active {
+        transform: scale(0.94);
+      }
+
+      button:focus-visible {
+        outline: 2px solid var(--color-primary);
+        outline-offset: 2px;
+      }
+
       .material-icons {
         font-size: 28px;
         vertical-align: middle;
       }
 
-      button:hover {
-        background: #444;
+      /* Timer presets */
+      #presets {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 0.5rem;
       }
-      @keyframes blink {
-        0% {
-          opacity: 1;
-        }
-        50% {
-          opacity: 0;
-        }
-        100% {
-          opacity: 1;
-        }
+
+      .preset-active {
+        background: var(--color-primary);
+        color: #000;
       }
+
+      /* Alarm animation */
       @keyframes blinkText {
-        0% { color: red; }
-        50% { color: #28ff00; }
-        100% { color: red; }
+        0% {
+          color: var(--color-danger);
+        }
+
+        50% {
+          color: var(--color-primary);
+        }
+
+        100% {
+          color: var(--color-danger);
+        }
       }
+
       @keyframes blinkBorder {
-        0% { border-color: #28ff00; }
-        50% { border-color: red; }
-        100% { border-color: #28ff00; }
+        0% {
+          border-color: var(--color-primary);
+        }
+
+        50% {
+          border-color: var(--color-danger);
+        }
+
+        100% {
+          border-color: var(--color-primary);
+        }
       }
+
       .blink {
         animation:
           blinkText 0.6s infinite,
           blinkBorder 0.6s infinite;
       }
-      #presets {
-        display: flex;
-        gap: 10px;
+
+      /* Responsive */
+      @media (max-width: 768px) {
+        body {
+          justify-content: flex-start;
+          padding-top: 2rem;
+        }
+
+        .tools {
+          flex-direction: column;
+          width: 100%;
+
+          margin-top: 3rem;
+          gap: 1.5rem;
+          padding: 0;
+        }
+
+        .tool {
+          width: 100%;
+          padding: 1.5rem;
+        }
       }
-      .preset-active {
-        background: #28ff00;
-        color: black;
+
+      @media (max-width: 480px) {
+        body {
+          padding: 1rem 0.75rem;
+        }
+
+        #time {
+          font-size: clamp(3rem, 16vw, 5rem);
+        }
+
+        #date {
+          font-size: clamp(1rem, 5vw, 1.5rem);
+        }
+
+        .tools {
+          margin-top: 2.5rem;
+        }
+
+        .tool {
+          padding: 1.25rem;
+        }
+
+        .display {
+          font-size: clamp(1.4rem, 8vw, 2.2rem);
+        }
+
+        button {
+          min-width: 48px;
+          min-height: 48px;
+        }
+      }
+
+      /* Accessibility */
+      @media (prefers-reduced-motion: reduce) {
+        .blink {
+          animation: none;
+        }
+
+        button {
+          transition: none;
+        }
       }
     </style>
   </head>
+
   <body>
-    <div>
-      <p id="time"></p>
-      <p id="date"></p>
-    </div>
+    <main>
+      <!-- Clock -->
+      <section class="clock" aria-label="Utah current time and date">
+        <p id="saltLakeLabel">PLEASANT GROVE, UTAH</p>
+        <p id="time"></p>
+        <p id="date"></p>
+      </section>
 
-    <div class="tools">
-      <div id="cronometro">
-        <h3>Cronómetro</h3>
-        <h1 id="display">00:00:00.00</h1>
-        <div id="buttonsBar">
-          <button onclick="chrono.start()">
-            <span class="material-icons">play_arrow</span>
-          </button>
-          <button onclick="chrono.pause()">
-            <span class="material-icons">pause</span>
-          </button>
-          <button onclick="chrono.reset()">
-            <span class="material-icons">restart_alt</span>
-          </button>
-        </div>
+      <!-- SLC Clock -->
+      <section
+        aria-label="Current time and date in Salt Lake City"
+        style="
+          border: 1px solid var(--color-danger);
+          color: var(--color-danger);
+          margin: 0 auto;
+          width: min(40%, 64rem);
+          border-radius: var(--border-radius);
+          padding: 1rem;
+          margin-top: 2rem;
+        "
+      >
+        <p id="saltLakeLabel">LOCAL</p>
+        <p id="saltLakeTime" aria-label="Hora CDMX"></p>
+      </section>
+
+      <!-- Tools -->
+      <div class="tools">
+        <!-- Stopwatch -->
+        <section class="tool" aria-labelledby="chrono-title">
+          <h2 id="chrono-title" class="tool-title">Cronómetro</h2>
+
+          <output
+            id="display"
+            class="display"
+            aria-label="Tiempo del cronómetro"
+          >
+            00:00:00.00
+          </output>
+
+          <div class="buttons-bar">
+            <button
+              id="chrono-start"
+              type="button"
+              aria-label="Iniciar cronómetro"
+            >
+              <span class="material-icons" aria-hidden="true">
+                play_arrow
+              </span>
+            </button>
+
+            <button
+              id="chrono-pause"
+              type="button"
+              aria-label="Pausar cronómetro"
+            >
+              <span class="material-icons" aria-hidden="true"> pause </span>
+            </button>
+
+            <button
+              id="chrono-reset"
+              type="button"
+              aria-label="Reiniciar cronómetro"
+            >
+              <span class="material-icons" aria-hidden="true">
+                restart_alt
+              </span>
+            </button>
+          </div>
+        </section>
+
+        <!-- Timer -->
+        <section id="timer" class="tool" aria-labelledby="timer-title">
+          <h2 id="timer-title" class="tool-title">Timer</h2>
+
+          <output
+            id="timerDisplay"
+            class="display"
+            aria-label="Tiempo restante del timer"
+          >
+            05:00.00
+          </output>
+
+          <div class="buttons-bar">
+            <button id="timer-start" type="button" aria-label="Iniciar timer">
+              <span class="material-icons" aria-hidden="true">
+                play_arrow
+              </span>
+            </button>
+
+            <button id="timer-stop" type="button" aria-label="Detener timer">
+              <span class="material-icons" aria-hidden="true"> stop </span>
+            </button>
+
+            <button id="timer-reset" type="button" aria-label="Reiniciar timer">
+              <span class="material-icons" aria-hidden="true">
+                restart_alt
+              </span>
+            </button>
+          </div>
+
+          <div id="presets" aria-label="Duraciones preestablecidas">
+            <button type="button" data-minutes="1">1m</button>
+            <button type="button" data-minutes="5" class="preset-active">
+              5m
+            </button>
+            <button type="button" data-minutes="10">10m</button>
+            <button type="button" data-minutes="15">15m</button>
+            <button type="button" data-minutes="20">20m</button>
+          </div>
+        </section>
       </div>
+    </main>
 
-      <div id="timer">
-        <h3>Timer</h3>
-        <h1 id="timerDisplay">00:05.00</h1>
-        <div id="buttonsBar">
-          <button onclick="timer.startTimer()">
-            <span class="material-icons">play_arrow</span>
-          </button>
-          <button onclick="timer.stopTimer()">
-            <span class="material-icons">stop</span>
-          </button>
-          <button onclick="timer.resetTimer()">
-            <span class="material-icons">restart_alt</span>
-          </button>
-        </div>
-        <div id="presets">
-          <button onclick="timer.setPreset(1)">1 min</button>
-          <button onclick="timer.setPreset(5)">5 min</button>
-          <button onclick="timer.setPreset(10)">10 min</button>
-          <button onclick="timer.setPreset(25)">25 min</button>
-        </div>
-      </div>
-    </div>
-  </body>
+    <script>
+      "use strict";
+      const elements = {
+        time: document.getElementById("saltLakeTime"),
+        date: document.getElementById("date"),
+        saltLakeTime: document.getElementById("time"),
 
-  <script defer type="text/javascript">
-    // ===========================
-    // Time clock
-    // ===========================
-    const timeClock = (() => {
-      const WEEK = ["SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT"];
-      const MONTHS = ["JAN","FEB","MAR","APR","MAY","JUN","JUL","AUG","SEP","OCT","NOV","DEC",];
+        chronoDisplay: document.getElementById("display"),
+        chronoStart: document.getElementById("chrono-start"),
+        chronoPause: document.getElementById("chrono-pause"),
+        chronoReset: document.getElementById("chrono-reset"),
 
-      function updateTime() {
-        let now = new Date();
-        let hours = now.getHours();
-        let ampm = hours >= 12 ? "PM" : "AM";
+        timer: document.getElementById("timer"),
+        timerDisplay: document.getElementById("timerDisplay"),
+        timerStart: document.getElementById("timer-start"),
+        timerStop: document.getElementById("timer-stop"),
+        timerReset: document.getElementById("timer-reset"),
 
-        hours = hours % 12;
-        hours = hours ? hours : 12;
-
-        document.getElementById("time").innerText =
-          zeroPadding(hours, 2) +
-          ":" +
-          zeroPadding(now.getMinutes(), 2) +
-          ":" +
-          zeroPadding(now.getSeconds(), 2) +
-          " " +
-          ampm;
-        //  + ",";
-
-        document.getElementById("date").innerText =
-          WEEK[now.getDay()] +
-          " " +
-          MONTHS[now.getMonth()] +
-          "-" +
-          zeroPadding(now.getDate(), 2) +
-          "-" +
-          now.getFullYear();
-      }
-
-      updateTime();
-      setInterval(updateTime, 1000);
-
-      function zeroPadding(num, digit) {
-        return String(num).padStart(digit, "0");
-      }
-      return {
-        updateTime,
+        presets: document.querySelectorAll("#presets button"),
       };
-    })();
 
-    // ===========================
-    // Cronometro
-    // ===========================
-    const chrono = (() => {
-      let startTime = 0;
-      let elapsed = 0;
-      let interval = null;
+      // Clock
 
-      function formatChronoTime(ms) {
-        const hrs = String(Math.floor(ms / 3600000)).padStart(2, "0");
-        const mins = String(Math.floor((ms % 3600000) / 60000)).padStart(
-          2,
-          "0",
-        );
-        const secs = String(Math.floor((ms % 60000) / 1000)).padStart(2, "0");
-        const hundreds = String(Math.floor((ms % 1000) / 10)).padStart(2, "0");
-        return `${hrs}:${mins}:${secs}.${hundreds}`;
-      }
-
-      function start() {
-        if (interval) return;
-        startTime = Date.now() - elapsed;
-        interval = setInterval(() => {
-          elapsed = Date.now() - startTime;
-          updateChronoDisplay(elapsed);
-        }, 10);
-      }
-
-      function pause() {
-        clearInterval(interval);
-        interval = null;
-      }
-
-      function reset() {
-        pause();
-        elapsed = 0;
-        updateChronoDisplay(0);
-      }
-
-      function updateChronoDisplay(ms) {
-        document.getElementById("display").textContent = formatChronoTime(ms);
-      }
-      return {
-        start,
-        pause,
-        reset,
-      };
-    })();
-    // ===========================
-    // TIMER
-    // ===========================
-    const timer = (() => {
-      const presets = [5, 10, 25, 45];
-      let duration = 5000;
-      let timeLeft = duration;
-      let timerInterval = null;
-      let startTheTime = 0;
-
-      function formatTimerTime(ms) {
-        const mins = String(Math.floor(ms / 60000)).padStart(2, "0");
-        const secs = String(Math.floor((ms % 60000) / 1000)).padStart(2, "0");
-        const centiseconds = String(Math.floor((ms % 1000) / 10)).padStart(
-          2,
-          "0",
-        );
-        return `${mins}:${secs}.${centiseconds}`;
-      }
-
-      function updateTimerDisplay() {
-        document.getElementById("timerDisplay").textContent =
-          formatTimerTime(timeLeft);
-      }
-
-      function startTimer() {
-        if (timerInterval) return;
-        startTheTime = Date.now() - (duration - timeLeft);
-        timerInterval = setInterval(() => {
-          const elapsed = Date.now() - startTheTime;
-          timeLeft = duration - elapsed;
-
-          if (timeLeft <= 0) {
-            timeLeft = 0;
-            stopTimer();
-            triggerAlarm();
-          }
-
-          updateTimerDisplay();
-        }, 10);
-      }
-
-      function stopTimer() {
-        clearInterval(timerInterval);
-        timerInterval = null;
-        stopAlarm();
-      }
-      function resetTimer() {
-        stopTimer();
-        stopAlarm();
-        timeLeft = duration;
-        document.getElementById("timerDisplay").textContent =
-          formatTimerTime(timeLeft);
-        document.getElementById("timerDisplay").classList.remove("blink");
-        document.getElementById("timer").classList.remove("blink");
-      }
-      const alarmSound = new Audio(
-        "src/mixkit-security-facility-breach-alarm-994.wav",
-      );
-      function triggerAlarm() {
-        alarmSound.volume = 0.2;
-        alarmSound.currentTime = 0;
-        alarmSound.play();
-        const display = document.getElementById("timerDisplay");
-        const container = document.getElementById("timer");
-        display.classList.add("blink");
-        container.classList.add("blink");
-      }
-      alarmSound.loop = true;
-      alarmSound.volume = 0.2;
-
-      function playAlarm() {
-        alarmSound.play();
-        let vol = 0.2;
-
-        const fade = setInterval(() => {
-          if (vol < 1) {
-            vol += 0.1;
-            alarmSound.volume = vol;
-          } else {
-            clearInterval(fade);
-          }
-        }, 500);
-      }
-
-      function stopAlarm() {
-        alarmSound.pause();
-        alarmSound.currentTime = 0;
-      }
-      function setPreset(minutes) {
-        stopTimer();
-        duration = minutes * 60 * 1000;
-        timeLeft = duration;
-        const display = document.getElementById("timerDisplay");
-        const container = document.getElementById("timer");
-
-        display.classList.remove("blink");
-        container.classList.remove("blink");
-        
-        document.querySelectorAll("#presets button")
-        .forEach(btn => btn.classList.remove("preset-active"));
-        event.target.classList.add("preset-active");
-        updateTimerDisplay();
-        startTimer();
+      const timeClock = (() => {
+        const saltLakeFormatter = new Intl.DateTimeFormat("en-US", {
+          timeZone: "America/Denver",
+          hour: "2-digit",
+          minute: "2-digit",
+          second: "2-digit",
+          hour12: true,
+        });
+        const WEEK = ["SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT"];
+        const MONTHS = ["JAN", "FEB", "MAR", "APR", "MAY", "JUN", "JUL", "AUG", "SEP", "OCT", "NOV", "DEC"];
+        function zeroPadding(value, digits) {
+          return String(value).padStart(digits, "0");
         }
-      return {
-        startTimer,
-        stopTimer,
-        resetTimer,
-        setPreset,
-      };
-    })();
-  </script>
+
+        const mexicoCityTimeFormatter = new Intl.DateTimeFormat("en-US", {
+          timeZone: "America/Mexico_City",
+          hour: "2-digit",
+          minute: "2-digit",
+          second: "2-digit",
+          hour12: true,
+        });
+
+        const mexicoCityDateFormatter = new Intl.DateTimeFormat("en-US", {
+          timeZone: "America/Mexico_City",
+          weekday: "short",
+          month: "short",
+          day: "2-digit",
+          year: "numeric",
+        });
+
+        function updateTime() {
+          const now = new Date();
+          elements.time.textContent = mexicoCityTimeFormatter.format(now);
+
+          // let hours = now.getHours();
+          // const ampm = hours >= 12 ? "PM" : "AM";
+          // hours = hours % 12 || 12;
+          // elements.time.textContent =
+          // `${zeroPadding(hours, 2)}:` +
+          // `${zeroPadding(now.getMinutes(), 2)}:` +
+          // `${zeroPadding(now.getSeconds(), 2)} ` +
+          // ampm;
+
+          // elements.date.textContent =
+          // `${WEEK[now.getDay()]} ` +
+          // `${MONTHS[now.getMonth()]}-` +
+          // `${zeroPadding(now.getDate(), 2)}-` +
+          // now.getFullYear();
+
+          const dateParts = Object.fromEntries(
+            mexicoCityDateFormatter
+              .formatToParts(now)
+              .map(({ type, value }) => [type, value]),
+          );
+
+          elements.date.textContent =
+            `${dateParts.weekday.toUpperCase()} ` +
+            `${dateParts.month.toUpperCase()}-` +
+            `${dateParts.day}-` +
+            dateParts.year;
+
+          elements.saltLakeTime.textContent = saltLakeFormatter.format(now);
+        }
+
+        updateTime();
+
+        setInterval(updateTime, 1000);
+
+        return {
+          updateTime,
+        };
+      })();
+
+      // Stopwatch
+      const chrono = (() => {
+        let startTime = 0;
+        let elapsed = 0;
+        let interval = null;
+
+        function formatTime(ms) {
+          const hours = String(Math.floor(ms / 3600000)).padStart(2, "0");
+          const minutes = String(Math.floor((ms % 3600000) / 60000)).padStart(
+            2,
+            "0",
+          );
+          const seconds = String(Math.floor((ms % 60000) / 1000)).padStart(
+            2,
+            "0",
+          );
+
+          const hundredths = String(Math.floor((ms % 1000) / 10)).padStart(
+            2,
+            "0",
+          );
+
+          return `${hours}:${minutes}:${seconds}.${hundredths}`;
+        }
+
+        function updateDisplay() {
+          elements.chronoDisplay.textContent = formatTime(elapsed);
+        }
+
+        function start() {
+          if (interval !== null) {
+            return;
+          }
+
+          startTime = Date.now() - elapsed;
+
+          interval = setInterval(() => {
+            elapsed = Date.now() - startTime;
+            updateDisplay();
+          }, 10);
+        }
+
+        function pause() {
+          if (interval === null) {
+            return;
+          }
+
+          clearInterval(interval);
+          interval = null;
+
+          // Actualiza una última vez para evitar perder algunos milisegundos al pausar.
+          elapsed = Date.now() - startTime;
+          updateDisplay();
+        }
+
+        function reset() {
+          pause();
+          elapsed = 0;
+          updateDisplay();
+        }
+
+        return {
+          start,
+          pause,
+          reset,
+        };
+      })();
+
+      // Timer
+      const timer = (() => {
+        const DEFAULT_MINUTES = 5;
+        let duration = DEFAULT_MINUTES * 60 * 1000;
+        let timeLeft = duration;
+        let timerInterval = null;
+        let startTime = 0;
+        const alarmSound = new Audio(
+          "src/mixkit-security-facility-breach-alarm-994.wav",
+        );
+        alarmSound.loop = true;
+        alarmSound.volume = 0.2;
+
+        function formatTime(ms) {
+          const minutes = String(Math.floor(ms / 60000)).padStart(2, "0");
+          const seconds = String(Math.floor((ms % 60000) / 1000)).padStart(
+            2,
+            "0",
+          );
+          const centiseconds = String(Math.floor((ms % 1000) / 10)).padStart(
+            2,
+            "0",
+          );
+          return `${minutes}:${seconds}.${centiseconds}`;
+        }
+        function updateDisplay() {
+          elements.timerDisplay.textContent = formatTime(timeLeft);
+        }
+
+        function clearAlarmState() {
+          elements.timerDisplay.classList.remove("blink");
+          elements.timer.classList.remove("blink");
+        }
+
+        function playAlarm() {
+          alarmSound.currentTime = 0;
+
+          const playPromise = alarmSound.play();
+          if (playPromise !== undefined) {
+            playPromise.catch(() => {});
+          }
+          elements.timerDisplay.classList.add("blink");
+          elements.timer.classList.add("blink");
+        }
+
+        function stopAlarm() {
+          alarmSound.pause();
+          alarmSound.currentTime = 0;
+          clearAlarmState();
+        }
+
+        function start() {
+          if (timerInterval !== null) {
+            return;
+          }
+          // Si el timer ya llegó a cero, comenzar nuevamente significa comenzar desde la duración seleccionada.
+          if (timeLeft <= 0) {
+            timeLeft = duration;
+            updateDisplay();
+          }
+
+          startTime = Date.now() - (duration - timeLeft);
+          timerInterval = setInterval(() => {
+            const elapsed = Date.now() - startTime;
+            timeLeft = duration - elapsed;
+            if (timeLeft <= 0) {
+              timeLeft = 0;
+              updateDisplay();
+              stop();
+              playAlarm();
+              return;
+            }
+            updateDisplay();
+          }, 10);
+        }
+
+        function stop() {
+          if (timerInterval !== null) {
+            clearInterval(timerInterval);
+            timerInterval = null;
+          }
+
+          stopAlarm();
+        }
+
+        function reset() {
+          stop();
+
+          timeLeft = duration;
+
+          updateDisplay();
+        }
+
+        function setPreset(minutes, button) {
+          stop();
+
+          duration = minutes * 60 * 1000;
+          timeLeft = duration;
+
+          elements.presets.forEach((preset) => {
+            preset.classList.remove("preset-active");
+          });
+
+          button.classList.add("preset-active");
+
+          updateDisplay();
+
+          // Mantiene el comportamiento original: seleccionar un preset inicia automáticamente el timer.
+          start();
+        }
+
+        return {
+          start,
+          stop,
+          reset,
+          setPreset,
+        };
+      })();
+
+      // Event listeners:
+      // Stopwatch
+      elements.chronoStart.addEventListener("click", chrono.start);
+      elements.chronoPause.addEventListener("click", chrono.pause);
+      elements.chronoReset.addEventListener("click", chrono.reset);
+
+      // Timer
+      elements.timerStart.addEventListener("click", timer.start);
+      elements.timerStop.addEventListener("click", timer.stop);
+      elements.timerReset.addEventListener("click", timer.reset);
+
+      // Timer presets
+      elements.presets.forEach((button) => {
+        button.addEventListener("click", () => {
+          const minutes = Number(button.dataset.minutes);
+          timer.setPreset(minutes, button);
+        });
+      });
+
+      // Initial state
+      // timeClock.updateTime();
+    </script>
+  </body>
 </html>
